@@ -20,6 +20,13 @@ public class UserDaoImp implements UserDao {
    }
 
    @Override
+   public User getUsersByCars(String model, int series) {
+      String hql = "FROM User WHERE car.model = :model and car.series = :series";
+      User user = sessionFactory.getCurrentSession().createQuery(hql, User.class).setParameter("model", model).setParameter("series", series).uniqueResult();
+      return user;
+   }
+
+   @Override
    @SuppressWarnings("unchecked")
    public List<User> listUsers() {
       TypedQuery<User> query=sessionFactory.getCurrentSession().createQuery("from User");
