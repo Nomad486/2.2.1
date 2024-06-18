@@ -3,6 +3,7 @@ package hiber;
 import hiber.config.AppConfig;
 import hiber.model.Car;
 import hiber.model.User;
+import hiber.service.CarService;
 import hiber.service.UserService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -16,6 +17,7 @@ public class MainApp {
                 new AnnotationConfigApplicationContext(AppConfig.class);
 
         UserService userService = context.getBean(UserService.class);
+        CarService carService = context.getBean(CarService.class);
 
         // Создание и сохранение списка юзеров
 
@@ -40,24 +42,19 @@ public class MainApp {
         );
 
         for (Car car : cars) {
-            userService.addCar(car);
+            carService.add(car);
         }
 
-        // Получение списка пользователей и машин из базы данных
+        // Получение списка пользователей и машин из БД
+        List<User> usersFromDB = userService.listUsers();
+        List<Car> carsFromDB = carService.listCars();
 
-        List<User> usersFromDb = userService.listUsers();
-        List<Car> carsFromDb = userService.listCars();
+        // Раздаем машины юзерам
 
-        // Раздать машины юзерам
-
-        for (int i = 0; i < usersFromDb.size() && i < carsFromDb.size(); i++) {
-            User user = usersFromDb.get(i);
-            Car car = carsFromDb.get(i);
+        for (int i = 0; i < usersFromDB.size() && i < carsFromDB.size(); i++) {
+            User user = usersFromDB.get(i);
+            Car car = carsFromDB.get(i);
             user.setCar(car);
-            userService.add(user);
-        }
-
-        for (User user : usersFromDb) {
             userService.add(user);
         }
 
